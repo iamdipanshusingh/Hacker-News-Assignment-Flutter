@@ -13,7 +13,7 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<AppState>(context);
+    final provider = Provider.of<AppState>(context, listen: false);
 
     return Scaffold(
       key: _scaffoldKey,

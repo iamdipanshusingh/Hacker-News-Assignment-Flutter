@@ -5,7 +5,7 @@ class NewsResult {
   final String title;
   final String author;
   final int numComments;
-  final DateTime createdAt;
+  final String createdAt;
   final String error;
 
   NewsResult({

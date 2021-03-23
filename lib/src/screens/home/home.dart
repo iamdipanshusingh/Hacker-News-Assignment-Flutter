@@ -70,13 +70,17 @@ class HomeScreen extends StatelessWidget {
               ),
               Selector<AppState, ResultsWrapper>(
                 selector: (_, provider) => provider.resultsWrapper,
-                builder: (_, resultsWrapper, __) => resultsWrapper != null ? ListView.builder(
-                  key: PageStorageKey('search list'),
-                  shrinkWrap: true,
-                  physics: BouncingScrollPhysics(),
-                  itemCount: resultsWrapper?.newsList?.length,
-                  itemBuilder: (_, index) => _newsItemBuilder(resultsWrapper?.newsList[index]),
-                ) : Center(child: Text('Nothing found!'),),
+                builder: (_, resultsWrapper, __) => resultsWrapper != null
+                    ? ListView.builder(
+                        key: PageStorageKey('search list'),
+                        shrinkWrap: true,
+                        physics: BouncingScrollPhysics(),
+                        itemCount: resultsWrapper?.newsList?.length,
+                        itemBuilder: (_, index) => _newsItemBuilder(resultsWrapper?.newsList[index]),
+                      )
+                    : Center(
+                        child: Text('Nothing found!'),
+                      ),
               ),
             ],
           ),
@@ -103,6 +107,33 @@ class HomeScreen extends StatelessWidget {
 
   /// TODO: implement a better and usable item builder
   _newsItemBuilder(NewsResult newsResult) {
-    return Text(newsResult.title ?? '-');
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(newsResult.title ?? '-'),
+            SizedBox(height: 5),
+            RichText(
+              text: TextSpan(
+                  text: 'By ' + newsResult.author,
+                  children: [
+                    TextSpan(
+                      text: ', ' + newsResult.createdAt,
+                      style: TextStyle(color: subtextColor),
+                    ),
+                    TextSpan(
+                      text: ', ${newsResult.numComments ?? 'No'} Comments',
+                      style: TextStyle(color: subtextColor),
+                    ),
+                  ],
+                  style: TextStyle(color: Colors.black87, fontSize: 13)),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

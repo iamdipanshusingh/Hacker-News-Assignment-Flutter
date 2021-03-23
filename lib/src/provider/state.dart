@@ -21,6 +21,9 @@ class AppState extends ChangeNotifier {
 
     _resultsWrapper = await APIController.queryNews(query, page: page);
 
+    /// this will simply remove the redundant item having no title
+    _resultsWrapper.newsList.removeWhere((item) => item.title == null || item.title.isEmpty);
+
     if (shouldNotify) {
       _isLoading = false;
       notifyListeners();

@@ -6,6 +6,7 @@ class NewsResult {
   final String author;
   final int numComments;
   final DateTime createdAt;
+  final String error;
 
   NewsResult({
     this.id,
@@ -13,6 +14,7 @@ class NewsResult {
     this.author,
     this.numComments,
     this.createdAt,
+    this.error,
   });
 
   factory NewsResult.fromJson(var json) {

@@ -20,7 +20,7 @@ class NewsResult {
   factory NewsResult.fromJson(var json) {
     return NewsResult(
       id: json['objectID'],
-      title: json['title'],
+      title: json['title'] ?? json['story_title'],
       author: json['author'],
       numComments: json['num_comments'],
       createdAt: Utils.getDateTimeFromMilliseconds(json['created_at_i']),

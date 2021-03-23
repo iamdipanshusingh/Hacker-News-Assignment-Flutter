@@ -2,14 +2,15 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:searchhn/src/models/results_wrapper.dart';
+import 'package:searchhn/src/utils/const.dart';
 
 class APIController {
   /// [query] - query term searched by the user
   /// [page] - this will determine the page no. user is currently on
   ///
   /// returns list of news results
-  static Future<ResultsWrapper> queryNews(String query, {int page = 1}) async {
-    final String url = '${Uri.encodeFull(query)}$query&page=$page';
+  static Future<ResultsWrapper> queryNews(String query, {int page}) async {
+    final String url = '$SEARCH_URL$query${page != null ? '&page=$page' : ''}';
 
     final response = await http.get(url);
 

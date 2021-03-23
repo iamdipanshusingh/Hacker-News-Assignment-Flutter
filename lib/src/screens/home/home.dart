@@ -33,13 +33,11 @@ class HomeScreen extends StatelessWidget {
                         enabledBorder: InputBorder.none,
                         fillColor: Colors.white,
                         filled: true,
-
                       ),
                     ),
                   ),
                   FlatButton(
                     onPressed: () {
-                      FocusScope.of(context).requestFocus(FocusNode());
                     },
                     padding: const EdgeInsets.all(0),
                     color: Theme.of(context).primaryColor,

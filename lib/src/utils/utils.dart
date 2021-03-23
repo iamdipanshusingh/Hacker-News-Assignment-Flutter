@@ -1,3 +1,5 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class Utils {
@@ -14,5 +16,9 @@ class Utils {
     DateFormat format = DateFormat('d MMM yy');
 
     return format.format(time);
+  }
+
+  static showSnackBar(GlobalKey<ScaffoldState> scaffoldKey, message) {
+    scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(message)));
   }
 }

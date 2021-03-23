@@ -5,7 +5,8 @@ class NewsResult {
   final String title;
   final String author;
   final int numComments;
-  final DateTime createdAt;
+  final String createdAt;
+  final String error;
 
   NewsResult({
     this.id,
@@ -13,12 +14,13 @@ class NewsResult {
     this.author,
     this.numComments,
     this.createdAt,
+    this.error,
   });
 
   factory NewsResult.fromJson(var json) {
     return NewsResult(
       id: json['objectID'],
-      title: json['title'],
+      title: json['title'] ?? json['story_title'],
       author: json['author'],
       numComments: json['num_comments'],
       createdAt: Utils.getDateTimeFromMilliseconds(json['created_at_i']),

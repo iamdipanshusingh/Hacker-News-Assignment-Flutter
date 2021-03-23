@@ -1,14 +1,32 @@
 import 'package:flutter/foundation.dart';
-import 'package:searchhn/src/models/news_result.dart';
+import 'package:searchhn/src/api/api_controller.dart';
+import 'package:searchhn/src/models/results_wrapper.dart';
 
 class AppState extends ChangeNotifier {
   bool _isLoading = false;
-  List<NewsResult> _newsList = List();
+  ResultsWrapper _resultsWrapper;
 
   bool get isLoading => _isLoading;
-  List<NewsResult> get newsList => _newsList;
 
-  searchNews(String query, {bool shouldNotify = true}) {
-    print('$query has been searched');
+  ResultsWrapper get resultsWrapper => _resultsWrapper;
+
+  /// this will simply search the news
+  ///
+  /// will be used to update the loading behaviour, fetching the news list
+  searchNews(String query, {int page, bool shouldNotify = true}) async {
+    if (shouldNotify) {
+      _isLoading = true;
+      notifyListeners();
+    }
+
+    _resultsWrapper = await APIController.queryNews(query, page: page);
+
+    /// this will simply remove the redundant item having no title
+    _resultsWrapper.newsList.removeWhere((item) => item.title == null || item.title.isEmpty);
+
+    if (shouldNotify) {
+      _isLoading = false;
+      notifyListeners();
+    }
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:searchhn/src/screens/splash.dart';
 
 void main() {
   runApp(MyApp());
@@ -7,6 +8,10 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp();
+    return MaterialApp(
+      title: 'Search Hacker News',
+      debugShowCheckedModeBanner: false,
+      home: SplashScreen(),
+    );
   }
 }

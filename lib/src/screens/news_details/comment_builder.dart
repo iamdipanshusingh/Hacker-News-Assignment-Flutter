@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:searchhn/src/models/item.dart';
 import 'package:searchhn/src/provider/state.dart';
 import 'package:searchhn/src/screens/news_details/comment_line_builder.dart';
+import 'package:searchhn/src/utils/const.dart';
 import 'package:searchhn/src/utils/utils.dart';
 
 /// this will simply build the comment section in a nested way
@@ -51,7 +52,7 @@ class CommentsBuilder extends StatelessWidget {
                 Text(
                   comments[index].createdAt,
                   style: TextStyle(
-                    color: Colors.black87,
+                    color: subtextColor,
                     fontSize: 13,
                     // fontWeight: FontWeight.w300,
                   ),
@@ -59,8 +60,7 @@ class CommentsBuilder extends StatelessWidget {
               ],
             ),
           ),
-          Divider(),
-          Selector<AppState, Map>(
+          (comments[index].children?.isNotEmpty ?? false) ? Selector<AppState, Map>(
             selector: (_, provider) => provider.viewReplyMap,
             builder: (_, viewReplyMap, __) {
               return (viewReplyMap[comments[index].parentId] ?? false)
@@ -86,7 +86,8 @@ class CommentsBuilder extends StatelessWidget {
                       ),
                     );
             },
-          ),
+          ) : Container(),
+          Divider(),
         ],
       ),
     );

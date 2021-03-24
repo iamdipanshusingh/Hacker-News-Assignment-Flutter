@@ -5,11 +5,14 @@ import 'package:searchhn/src/models/results_wrapper.dart';
 
 class AppState extends ChangeNotifier {
   bool _isLoading = false;
+  bool _showFAB = false;
   ResultsWrapper _resultsWrapper;
   ItemDetails _newsDetails;
   Map _viewReplyMap = Map();
 
   bool get isLoading => _isLoading;
+
+  bool get showFAB => _showFAB;
 
   ResultsWrapper get resultsWrapper => _resultsWrapper;
 
@@ -97,6 +100,14 @@ class AppState extends ChangeNotifier {
       _viewReplyMap = Map();
     else
       _viewReplyMap[data.keys.first] = data.values.first;
+
+    if (shouldNotify) notifyListeners();
+  }
+
+  setFAB(bool value, {bool shouldNotify = true}) {
+    if (value == _showFAB) return;
+
+    _showFAB = value;
 
     if (shouldNotify) notifyListeners();
   }

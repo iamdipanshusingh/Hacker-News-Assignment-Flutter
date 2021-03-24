@@ -19,6 +19,8 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<AppState>(context, listen: false);
+    final size = MediaQuery.of(context).size;
+    final height = size.height;
 
     return Scaffold(
       key: _scaffoldKey,
@@ -97,8 +99,17 @@ class _HomeScreenState extends State<HomeScreen> {
                             );
                           },
                         )
-                      : Center(
-                          child: Text('Nothing found!'),
+                      : Container(
+                          height: height * 0.7,
+                          child: Center(
+                            child: Selector<AppState, String>(
+                              selector: (_, provider) => provider.query,
+                              builder: (_, query, __) => Text(
+                                (query?.isNotEmpty ?? false) ? 'Nothing found!' : 'Begin your search query now!',
+                                style: TextStyle(fontSize: 18),
+                              ),
+                            ),
+                          ),
                         ),
                 ),
               ],
@@ -135,9 +146,7 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             Text(
               newsResult.title ?? '-',
-              style: TextStyle(
-                fontSize: 16
-              ),
+              style: TextStyle(fontSize: 16),
             ),
             SizedBox(height: 5),
             RichText(

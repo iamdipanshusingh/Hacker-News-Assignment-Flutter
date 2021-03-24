@@ -50,7 +50,7 @@ class _NewsDetailsScreenState extends State<NewsDetailsScreen> {
           child: Scaffold(
             appBar: AppBar(
               title: Text(
-                'Hacker News',
+                newsDetails?.title ?? 'News Details',
               ),
             ),
             body: !provider.isLoading

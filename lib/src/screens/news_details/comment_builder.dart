@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:provider/provider.dart';
 import 'package:searchhn/src/models/item.dart';
 import 'package:searchhn/src/provider/state.dart';
@@ -26,7 +27,7 @@ class CommentsBuilder extends StatelessWidget {
           physics: BouncingScrollPhysics(),
           shrinkWrap: true,
           children: [
-            Text(comments[index].text ?? comments[index].title ?? '-'),
+            Html(data: comments[index].text ?? comments[index].title ?? '-'),
             Divider(),
             Selector<AppState, Map>(
               selector: (_, provider) => provider.viewReplyMap,

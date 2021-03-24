@@ -6,6 +6,7 @@ class ItemDetails {
   final String url;
   final String text;
   final List<ItemDetails> children;
+  final String error;
 
   ItemDetails({
     this.id,
@@ -15,6 +16,7 @@ class ItemDetails {
     this.url,
     this.text,
     this.children,
+    this.error,
   });
 
   factory ItemDetails.fromJson(var json) {

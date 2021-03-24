@@ -20,6 +20,8 @@ class _NewsDetailsScreenState extends State<NewsDetailsScreen> {
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
+  final _controller = ScrollController();
+
   @override
   void initState() {
     super.initState();
@@ -28,6 +30,13 @@ class _NewsDetailsScreenState extends State<NewsDetailsScreen> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       provider.fetchNewsDetails(widget.id);
+
+      _controller.addListener(() {
+        if (_controller.offset > 20)
+          provider.setFAB(true);
+        else
+          provider.setFAB(false);
+      });
     });
   }
 
@@ -37,6 +46,8 @@ class _NewsDetailsScreenState extends State<NewsDetailsScreen> {
 
     provider.setNewsDetails(null, shouldNotify: false);
     provider.updateViewCommentsMap(null, shouldNotify: false);
+
+    _controller.dispose();
   }
 
   @override
@@ -53,10 +64,20 @@ class _NewsDetailsScreenState extends State<NewsDetailsScreen> {
                 newsDetails?.title ?? 'News Details',
               ),
             ),
+            floatingActionButton: Selector<AppState, bool>(
+              selector: (_, provider) => provider.showFAB,
+              builder: (_, showFAB, __) => showFAB
+                  ? FloatingActionButton(
+                      onPressed: () => _controller.animateTo(0, duration: Duration(milliseconds: 200), curve: Curves.easeInOut),
+                      child: Icon(Icons.keyboard_arrow_up),
+                    )
+                  : Container(),
+            ),
             body: !provider.isLoading
                 ? Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: ListView(
+                      controller: _controller,
                       shrinkWrap: true,
                       physics: BouncingScrollPhysics(),
                       children: [

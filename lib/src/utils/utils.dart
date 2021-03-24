@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class Utils {
   /// returns [DateTime] representation of millisecond time
@@ -20,5 +21,14 @@ class Utils {
 
   static showSnackBar(GlobalKey<ScaffoldState> scaffoldKey, message) {
     scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(message)));
+  }
+
+
+  static launchUrl(String url) async {
+    if (await canLaunch(url)) {
+      return await launch(url);
+    } else {
+      return false;
+    }
   }
 }

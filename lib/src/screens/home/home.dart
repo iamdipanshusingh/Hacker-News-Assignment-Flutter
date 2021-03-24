@@ -133,18 +133,23 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(newsResult.title ?? '-'),
+            Text(
+              newsResult.title ?? '-',
+              style: TextStyle(
+                fontSize: 16
+              ),
+            ),
             SizedBox(height: 5),
             RichText(
               text: TextSpan(
-                  text: 'By ' + newsResult.author,
+                  text: 'By ' + newsResult.author + ', ',
                   children: [
                     TextSpan(
-                      text: ', ' + newsResult.createdAt,
+                      text: newsResult.createdAt,
                       style: TextStyle(color: subtextColor),
                     ),
                     TextSpan(
-                      text: ', ${newsResult.numComments ?? 'No'} Comments',
+                      text: ', ${newsResult.numComments ?? '0'} Comments',
                       style: TextStyle(color: subtextColor),
                     ),
                   ],

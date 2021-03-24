@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:searchhn/src/provider/state.dart';
+import 'package:searchhn/src/screens/home/home.dart';
+import 'package:searchhn/src/screens/news_details/news_details.dart';
 import 'package:searchhn/src/screens/splash.dart';
 
 void main() {
@@ -15,7 +17,12 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Search Hacker News',
         debugShowCheckedModeBanner: false,
-        home: SplashScreen(),
+        initialRoute: '/',
+        routes: {
+          '/': (_) => SplashScreen(),
+          '/home': (_) => HomeScreen(),
+          '/details': (context) => NewsDetailsScreen(id: ModalRoute.of(context).settings.arguments),
+        },
       ),
     );
   }

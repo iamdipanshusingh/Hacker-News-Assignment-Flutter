@@ -79,12 +79,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: Form(
                             key: _formKey,
                             child: TextFormField(
-                              onSaved: (query) {
-                                if (query == null || query.isEmpty) {
-                                  Utils.showSnackBar(_scaffoldKey, "There's nothing to search!");
-                                } else
-                                  provider.searchNews(query);
-                              },
+                              onSaved: _search,
+                              textInputAction: TextInputAction.done,
+                              onFieldSubmitted: _search,
                               decoration: InputDecoration(
                                 hintText: 'Enter your query here...',
                                 border: InputBorder.none,
@@ -219,5 +216,12 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
+  }
+
+  void _search(String query) {
+    if (query == null || query.isEmpty) {
+      Utils.showSnackBar(_scaffoldKey, "There's nothing to search!");
+    } else
+      provider.searchNews(query);
   }
 }

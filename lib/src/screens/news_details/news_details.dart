@@ -36,6 +36,7 @@ class _NewsDetailsScreenState extends State<NewsDetailsScreen> {
     super.dispose();
 
     provider.setNewsDetails(null, shouldNotify: false);
+    provider.updateViewCommentsMap(null, shouldNotify: false);
   }
 
   @override
@@ -49,7 +50,7 @@ class _NewsDetailsScreenState extends State<NewsDetailsScreen> {
           child: Scaffold(
             appBar: AppBar(
               title: Text(
-                'News Details',
+                'Hacker News',
               ),
             ),
             body: !provider.isLoading
@@ -92,6 +93,7 @@ class _NewsDetailsScreenState extends State<NewsDetailsScreen> {
                           ),
                         Divider(),
                         (newsDetails?.children == null || (newsDetails?.children?.length ?? 0) == 0) ? Text('No comments available') : Text('${newsDetails?.children?.length} comments'),
+                        SizedBox(height: 10),
                         (newsDetails?.children != null && (newsDetails?.children?.length ?? 0) > 0) ? CommentsBuilder(comments: newsDetails?.children) : Container()
                       ],
                     ),

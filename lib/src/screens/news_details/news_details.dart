@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:searchhn/src/models/item.dart';
+import 'package:searchhn/src/provider/state.dart';
 
 class NewsDetailsScreen extends StatefulWidget {
   final String id;
@@ -10,13 +13,23 @@ class NewsDetailsScreen extends StatefulWidget {
 }
 
 class _NewsDetailsScreenState extends State<NewsDetailsScreen> {
+  AppState provider;
+
   @override
   void initState() {
     super.initState();
+
+    provider = Provider.of<AppState>(context, listen: false);
+    provider.fetchNewsDetails(widget.id);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Center(
+      child: Selector<AppState, ItemDetails>(
+        selector: (_, provider) => provider.newsDetails,
+        builder: (_, newsDetails, __) => Text(newsDetails.title),
+      ),
+    );
   }
 }

@@ -4,12 +4,14 @@ import 'package:searchhn/src/models/item.dart';
 import 'package:searchhn/src/models/results_wrapper.dart';
 
 class AppState extends ChangeNotifier {
+  String _query;
   bool _isLoading = false;
   bool _showFAB = false;
   ResultsWrapper _resultsWrapper;
   ItemDetails _newsDetails;
   Map _viewReplyMap = Map();
 
+  String get query => _query;
   bool get isLoading => _isLoading;
 
   bool get showFAB => _showFAB;
@@ -24,6 +26,8 @@ class AppState extends ChangeNotifier {
   ///
   /// will be used to update the loading behaviour, fetching the news list
   searchNews(String query, {int page, bool shouldNotify = true}) async {
+    _query = query;
+
     if (shouldNotify) {
       _isLoading = true;
       notifyListeners();

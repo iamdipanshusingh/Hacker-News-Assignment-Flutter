@@ -10,6 +10,7 @@ class ItemDetails {
   final int storyId;
   final int parentId;
   final String createdAt;
+  final int points;
   final List<ItemDetails> children;
   final String error;
 
@@ -23,6 +24,7 @@ class ItemDetails {
     this.storyId,
     this.parentId,
     this.createdAt,
+    this.points,
     this.children,
     this.error,
   });
@@ -40,6 +42,7 @@ class ItemDetails {
       text: json['text'],
       storyId: json['story_id'],
       parentId: json['parent_id'],
+      points: json['points'],
       createdAt: Utils.getDateTimeFromMilliseconds(json['created_at_i']),
       children: parsedChildren,
     );

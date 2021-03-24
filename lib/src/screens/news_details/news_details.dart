@@ -87,16 +87,32 @@ class _NewsDetailsScreenState extends State<NewsDetailsScreen> {
                           style: TextStyle(fontSize: 18),
                         ),
                         SizedBox(height: 8),
-                        RichText(
-                          text: TextSpan(
-                            text: 'Author: ',
-                            children: [
-                              TextSpan(
-                                text: newsDetails?.author,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            RichText(
+                              text: TextSpan(
+                                text: 'Author: ',
+                                children: [
+                                  TextSpan(
+                                    text: newsDetails?.author,
+                                  ),
+                                ],
+                                style: TextStyle(color: Colors.black, fontSize: 15),
                               ),
-                            ],
-                            style: TextStyle(color: Colors.black, fontSize: 15),
-                          ),
+                            ),
+                            RichText(
+                              text: TextSpan(
+                                text: 'Points: ',
+                                children: [
+                                  TextSpan(
+                                    text: (newsDetails?.points ?? 0).toString(),
+                                  ),
+                                ],
+                                style: TextStyle(color: Colors.black, fontSize: 15),
+                              ),
+                            ),
+                          ],
                         ),
                         if (newsDetails?.text != null && (newsDetails?.text?.isNotEmpty ?? true)) Text(newsDetails?.text),
                         if (newsDetails?.url != null && (newsDetails?.url?.isNotEmpty ?? true))

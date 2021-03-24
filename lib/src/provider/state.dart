@@ -8,6 +8,7 @@ class AppState extends ChangeNotifier {
   int _page;
   String _query;
   bool _isLoading = false;
+  bool _isMoreLoading = false;
   bool _showFAB = false;
   ResultsWrapper _resultsWrapper;
   ItemDetails _newsDetails;
@@ -19,6 +20,8 @@ class AppState extends ChangeNotifier {
   String get query => _query;
 
   bool get isLoading => _isLoading;
+
+  bool get isMoreLoading => _isMoreLoading;
 
   bool get showFAB => _showFAB;
 
@@ -34,12 +37,22 @@ class AppState extends ChangeNotifier {
   ///
   /// will be used to update the loading behaviour, fetching the news list
   searchNews(String query, {int page, bool shouldNotify = true}) async {
+    /// local method to update the loading behaviour
+    ///
+    /// was being used frequently
+    updateLoading(bool value) {
+      if (shouldNotify) {
+        if (page != null)
+          _isMoreLoading = value;
+        else
+          _isLoading = value;
+        notifyListeners();
+      }
+    }
+
     _query = query;
 
-    if (shouldNotify) {
-      _isLoading = true;
-      notifyListeners();
-    }
+    updateLoading(true);
 
     try {
       final resultsWrapper = await APIController.queryNews(query, page: page);
@@ -49,7 +62,7 @@ class AppState extends ChangeNotifier {
       resultsWrapper.newsList.removeWhere((item) => item.title == null || item.title.isEmpty);
 
       if (page != null) {
-        List<NewsResult> oldNewsList = List.from(_resultsWrapper.newsList);
+        List<NewsResult> oldNewsList = List.from(_newsList);
         oldNewsList.addAll(resultsWrapper.newsList);
 
         _newsList = oldNewsList;
@@ -58,16 +71,9 @@ class AppState extends ChangeNotifier {
       }
       _resultsWrapper = resultsWrapper;
     } catch (_) {
-      if (shouldNotify) {
-        _isLoading = false;
-        notifyListeners();
-      }
+      updateLoading(false);
     }
-
-    if (shouldNotify) {
-      _isLoading = false;
-      notifyListeners();
-    }
+    updateLoading(false);
   }
 
   /// fetches the news details
@@ -136,6 +142,8 @@ class AppState extends ChangeNotifier {
   }
 
   incrementPage({bool shouldNotify = true}) {
+    if (_isMoreLoading) return;
+
     _page ??= 1;
 
     if (_resultsWrapper.pages <= _page) {

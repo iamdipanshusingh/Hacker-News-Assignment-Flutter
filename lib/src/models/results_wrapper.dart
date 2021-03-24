@@ -1,7 +1,7 @@
 import 'package:searchhn/src/models/news_result.dart';
 
 class ResultsWrapper {
-  final List<NewsResult> newsList;
+  List<NewsResult> newsList;
   final int totalHits;
   final int page;
   final int pages;

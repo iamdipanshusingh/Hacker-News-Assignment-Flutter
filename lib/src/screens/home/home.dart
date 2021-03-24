@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:searchhn/src/models/news_result.dart';
-import 'package:searchhn/src/models/results_wrapper.dart';
 import 'package:searchhn/src/provider/state.dart';
 import 'package:searchhn/src/utils/const.dart';
 import 'package:searchhn/src/utils/utils.dart';
@@ -16,9 +15,25 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
+  final _controller = ScrollController();
+
+  AppState provider;
+
+  @override
+  void initState() {
+    super.initState();
+
+    provider = Provider.of<AppState>(context, listen: false);
+    _controller.addListener(() {
+      /// increment the page when the max scroll extent is surpassed
+      if (_controller.position.maxScrollExtent == _controller.position.pixels) {
+        provider.incrementPage();
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<AppState>(context, listen: false);
     final size = MediaQuery.of(context).size;
     final height = size.height;
 
@@ -33,6 +48,7 @@ class _HomeScreenState extends State<HomeScreen> {
           GestureDetector(
             onPanDown: (_) => FocusScope.of(context).unfocus(),
             child: ListView(
+              controller: _controller,
               physics: BouncingScrollPhysics(),
               children: [
                 SizedBox(height: 20),
@@ -81,16 +97,16 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                 ),
-                Selector<AppState, ResultsWrapper>(
-                  selector: (_, provider) => provider.resultsWrapper,
-                  builder: (_, resultsWrapper, __) => resultsWrapper != null
+                Selector<AppState, List<NewsResult>>(
+                  selector: (_, provider) => provider.newsList,
+                  builder: (_, newsList, __) => newsList != null && newsList.length > 0
                       ? ListView.builder(
                           key: PageStorageKey('search list'),
                           shrinkWrap: true,
                           physics: BouncingScrollPhysics(),
-                          itemCount: resultsWrapper.newsList?.length,
+                          itemCount: newsList.length,
                           itemBuilder: (_, index) {
-                            NewsResult newsResult = resultsWrapper.newsList[index];
+                            NewsResult newsResult = newsList[index];
                             return GestureDetector(
                               onTap: () {
                                 Navigator.of(context).pushNamed('/details', arguments: newsResult.id);
@@ -102,12 +118,13 @@ class _HomeScreenState extends State<HomeScreen> {
                       : Container(
                           height: height * 0.7,
                           child: Center(
-                            child: Selector<AppState, String>(
-                              selector: (_, provider) => provider.query,
-                              builder: (_, query, __) => Text(
-                                (query?.isNotEmpty ?? false) ? 'Nothing found!' : 'Begin your search query now!',
-                                style: TextStyle(fontSize: 18),
-                              ),
+                            child: Consumer<AppState>(
+                              builder: (_, provider, __) => provider.isLoading
+                                  ? Container()
+                                  : Text(
+                                      (provider.query?.isNotEmpty ?? false) ? 'Nothing found!' : 'Begin your search query now!',
+                                      style: TextStyle(fontSize: 18),
+                                    ),
                             ),
                           ),
                         ),

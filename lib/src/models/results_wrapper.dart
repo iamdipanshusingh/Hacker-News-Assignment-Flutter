@@ -4,6 +4,7 @@ class ResultsWrapper {
   final List<NewsResult> newsList;
   final int totalHits;
   final int page;
+  final int pages;
   final int hitsPerPage;
   final String error;
 
@@ -11,6 +12,7 @@ class ResultsWrapper {
     this.newsList,
     this.totalHits,
     this.page,
+    this.pages,
     this.hitsPerPage,
     this.error,
   });
@@ -22,6 +24,7 @@ class ResultsWrapper {
       newsList: newsList.map((item) => NewsResult.fromJson(item)).toList(),
       totalHits: json['nbHits'],
       page: json['page'],
+      pages: json['nbPages'],
       hitsPerPage: json['hitsPerPage'],
     );
   }

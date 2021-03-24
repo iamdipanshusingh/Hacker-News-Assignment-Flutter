@@ -1,17 +1,23 @@
 import 'package:flutter/foundation.dart';
 import 'package:searchhn/src/api/api_controller.dart';
 import 'package:searchhn/src/models/item.dart';
+import 'package:searchhn/src/models/news_result.dart';
 import 'package:searchhn/src/models/results_wrapper.dart';
 
 class AppState extends ChangeNotifier {
+  int _page;
   String _query;
   bool _isLoading = false;
   bool _showFAB = false;
   ResultsWrapper _resultsWrapper;
   ItemDetails _newsDetails;
+  List<NewsResult> _newsList = List();
   Map _viewReplyMap = Map();
 
+  int get page => _page;
+
   String get query => _query;
+
   bool get isLoading => _isLoading;
 
   bool get showFAB => _showFAB;
@@ -19,6 +25,8 @@ class AppState extends ChangeNotifier {
   ResultsWrapper get resultsWrapper => _resultsWrapper;
 
   ItemDetails get newsDetails => _newsDetails;
+
+  List<NewsResult> get newsList => _newsList;
 
   Map get viewReplyMap => _viewReplyMap;
 
@@ -34,10 +42,21 @@ class AppState extends ChangeNotifier {
     }
 
     try {
-      _resultsWrapper = await APIController.queryNews(query, page: page);
+      final resultsWrapper = await APIController.queryNews(query, page: page);
+      _page = resultsWrapper.page + 1;
 
       /// this will simply remove the redundant item having no title
-      _resultsWrapper.newsList.removeWhere((item) => item.title == null || item.title.isEmpty);
+      resultsWrapper.newsList.removeWhere((item) => item.title == null || item.title.isEmpty);
+
+      if (page != null) {
+        List<NewsResult> oldNewsList = List.from(_resultsWrapper.newsList);
+        oldNewsList.addAll(resultsWrapper.newsList);
+
+        _newsList = oldNewsList;
+      } else {
+        _newsList = resultsWrapper.newsList;
+      }
+      _resultsWrapper = resultsWrapper;
     } catch (_) {
       if (shouldNotify) {
         _isLoading = false;
@@ -114,5 +133,18 @@ class AppState extends ChangeNotifier {
     _showFAB = value;
 
     if (shouldNotify) notifyListeners();
+  }
+
+  incrementPage({bool shouldNotify = true}) {
+    _page ??= 1;
+
+    if (_resultsWrapper.pages <= _page) {
+      _page = resultsWrapper.page + 1;
+      return;
+    }
+
+    _page++;
+
+    searchNews(_query, page: _page, shouldNotify: shouldNotify);
   }
 }

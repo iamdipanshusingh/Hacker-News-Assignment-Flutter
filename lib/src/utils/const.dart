@@ -7,3 +7,4 @@ const Color subtextColor = Color(0xff867979);
 /// urls
 const BASE_URL = 'http://hn.algolia.com/api/v1/';
 const SEARCH_URL = BASE_URL + 'search?query=';
+const ITEM_DETAILS_URL = BASE_URL + 'items/';

@@ -1,18 +1,27 @@
 import 'package:flutter/foundation.dart';
 import 'package:searchhn/src/api/api_controller.dart';
 import 'package:searchhn/src/models/item.dart';
+import 'package:searchhn/src/models/news_result.dart';
 import 'package:searchhn/src/models/results_wrapper.dart';
 
 class AppState extends ChangeNotifier {
+  int _page;
   String _query;
   bool _isLoading = false;
+  bool _isMoreLoading = false;
   bool _showFAB = false;
   ResultsWrapper _resultsWrapper;
   ItemDetails _newsDetails;
+  List<NewsResult> _newsList = List();
   Map _viewReplyMap = Map();
 
+  int get page => _page;
+
   String get query => _query;
+
   bool get isLoading => _isLoading;
+
+  bool get isMoreLoading => _isMoreLoading;
 
   bool get showFAB => _showFAB;
 
@@ -20,35 +29,51 @@ class AppState extends ChangeNotifier {
 
   ItemDetails get newsDetails => _newsDetails;
 
+  List<NewsResult> get newsList => _newsList;
+
   Map get viewReplyMap => _viewReplyMap;
 
   /// this will simply search the news
   ///
   /// will be used to update the loading behaviour, fetching the news list
   searchNews(String query, {int page, bool shouldNotify = true}) async {
-    _query = query;
-
-    if (shouldNotify) {
-      _isLoading = true;
-      notifyListeners();
-    }
-
-    try {
-      _resultsWrapper = await APIController.queryNews(query, page: page);
-
-      /// this will simply remove the redundant item having no title
-      _resultsWrapper.newsList.removeWhere((item) => item.title == null || item.title.isEmpty);
-    } catch (_) {
+    /// local method to update the loading behaviour
+    ///
+    /// was being used frequently
+    updateLoading(bool value) {
       if (shouldNotify) {
-        _isLoading = false;
+        if (page != null)
+          _isMoreLoading = value;
+        else
+          _isLoading = value;
         notifyListeners();
       }
     }
 
-    if (shouldNotify) {
-      _isLoading = false;
-      notifyListeners();
+    _query = query;
+
+    updateLoading(true);
+
+    try {
+      final resultsWrapper = await APIController.queryNews(query, page: page);
+      _page = resultsWrapper.page + 1;
+
+      /// this will simply remove the redundant item having no title
+      resultsWrapper.newsList.removeWhere((item) => item.title == null || item.title.isEmpty);
+
+      if (page != null) {
+        List<NewsResult> oldNewsList = List.from(_newsList);
+        oldNewsList.addAll(resultsWrapper.newsList);
+
+        _newsList = oldNewsList;
+      } else {
+        _newsList = resultsWrapper.newsList;
+      }
+      _resultsWrapper = resultsWrapper;
+    } catch (_) {
+      updateLoading(false);
     }
+    updateLoading(false);
   }
 
   /// fetches the news details
@@ -114,5 +139,20 @@ class AppState extends ChangeNotifier {
     _showFAB = value;
 
     if (shouldNotify) notifyListeners();
+  }
+
+  incrementPage({bool shouldNotify = true}) {
+    if (_isMoreLoading) return;
+
+    _page ??= 1;
+
+    if (_resultsWrapper.pages <= _page) {
+      _page = resultsWrapper.page + 1;
+      return;
+    }
+
+    _page++;
+
+    searchNews(_query, page: _page, shouldNotify: shouldNotify);
   }
 }

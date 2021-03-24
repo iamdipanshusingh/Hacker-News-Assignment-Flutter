@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:searchhn/src/models/news_result.dart';
-import 'package:searchhn/src/models/results_wrapper.dart';
 import 'package:searchhn/src/provider/state.dart';
 import 'package:searchhn/src/utils/const.dart';
 import 'package:searchhn/src/utils/utils.dart';
@@ -16,9 +15,31 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
+  final _controller = ScrollController();
+
+  AppState provider;
+
+  @override
+  void initState() {
+    super.initState();
+
+    provider = Provider.of<AppState>(context, listen: false);
+    _controller.addListener(() {
+      /// shows and hides FAB
+      if (_controller.offset > 200)
+        provider.setFAB(true);
+      else
+        provider.setFAB(false);
+
+      /// increment the page when the max scroll extent is surpassed
+      if (_controller.position.maxScrollExtent == _controller.position.pixels) {
+        provider.incrementPage();
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<AppState>(context, listen: false);
     final size = MediaQuery.of(context).size;
     final height = size.height;
 
@@ -28,12 +49,23 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Text('Search Hacker News'),
       ),
       backgroundColor: bgColor,
+      floatingActionButton: Selector<AppState, bool>(
+        selector: (_, provider) => provider.showFAB,
+        builder: (_, showFAB, __) => showFAB
+            ? FloatingActionButton(
+                onPressed: () => _controller.animateTo(0, duration: Duration(milliseconds: 200), curve: Curves.easeInOut),
+                child: Icon(Icons.keyboard_arrow_up),
+              )
+            : Container(),
+      ),
       body: Stack(
         children: [
           GestureDetector(
             onPanDown: (_) => FocusScope.of(context).unfocus(),
             child: ListView(
-              physics: BouncingScrollPhysics(),
+              key: PageStorageKey('news list'),
+              controller: _controller,
+              // physics: BouncingScrollPhysics(),
               children: [
                 SizedBox(height: 20),
                 Center(
@@ -81,33 +113,52 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                 ),
-                Selector<AppState, ResultsWrapper>(
-                  selector: (_, provider) => provider.resultsWrapper,
-                  builder: (_, resultsWrapper, __) => resultsWrapper != null
-                      ? ListView.builder(
-                          key: PageStorageKey('search list'),
-                          shrinkWrap: true,
-                          physics: BouncingScrollPhysics(),
-                          itemCount: resultsWrapper.newsList?.length,
-                          itemBuilder: (_, index) {
-                            NewsResult newsResult = resultsWrapper.newsList[index];
-                            return GestureDetector(
-                              onTap: () {
-                                Navigator.of(context).pushNamed('/details', arguments: newsResult.id);
+                Selector<AppState, List<NewsResult>>(
+                  selector: (_, provider) => provider.newsList,
+                  builder: (_, newsList, __) => (newsList?.length ?? 0) > 0
+                      ? Column(
+                          children: [
+                            ListView.builder(
+                              shrinkWrap: true,
+                              physics: NeverScrollableScrollPhysics(),
+                              itemCount: newsList.length,
+                              itemBuilder: (_, index) {
+                                NewsResult newsResult = newsList[index];
+                                return GestureDetector(
+                                  onTap: () async{
+                                    bool showFab = provider.showFAB;
+                                    provider.setFAB(false, shouldNotify: false);
+                                    await Navigator.of(context).pushNamed('/details', arguments: newsResult.id);
+
+                                    provider.setFAB(showFab);
+                                  },
+                                  child: _newsItemBuilder(newsResult),
+                                );
                               },
-                              child: _newsItemBuilder(newsResult),
-                            );
-                          },
+                            ),
+                            SizedBox(height: 10),
+                            Selector<AppState, bool>(
+                              selector: (_, provider) => provider.isMoreLoading,
+                              builder: (_, isMoreLoading, __) => Visibility(
+                                visible: isMoreLoading,
+                                child: Center(
+                                  child: CircularProgressIndicator(),
+                                ),
+                              ),
+                            ),
+                            SizedBox(height: 10),
+                          ],
                         )
                       : Container(
                           height: height * 0.7,
                           child: Center(
-                            child: Selector<AppState, String>(
-                              selector: (_, provider) => provider.query,
-                              builder: (_, query, __) => Text(
-                                (query?.isNotEmpty ?? false) ? 'Nothing found!' : 'Begin your search query now!',
-                                style: TextStyle(fontSize: 18),
-                              ),
+                            child: Consumer<AppState>(
+                              builder: (_, provider, __) => provider.isLoading
+                                  ? Container()
+                                  : Text(
+                                      (provider.query?.isNotEmpty ?? false) ? 'Nothing found!' : 'Begin your search query now!',
+                                      style: TextStyle(fontSize: 18),
+                                    ),
                             ),
                           ),
                         ),

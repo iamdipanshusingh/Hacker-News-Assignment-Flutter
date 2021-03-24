@@ -1,3 +1,5 @@
+import 'package:searchhn/src/utils/utils.dart';
+
 class ItemDetails {
   final int id;
   final String type;
@@ -7,6 +9,7 @@ class ItemDetails {
   final String text;
   final int storyId;
   final int parentId;
+  final String createdAt;
   final List<ItemDetails> children;
   final String error;
 
@@ -19,6 +22,7 @@ class ItemDetails {
     this.text,
     this.storyId,
     this.parentId,
+    this.createdAt,
     this.children,
     this.error,
   });
@@ -36,6 +40,7 @@ class ItemDetails {
       text: json['text'],
       storyId: json['story_id'],
       parentId: json['parent_id'],
+      createdAt: Utils.getDateTimeFromMilliseconds(json['created_at_i']),
       children: parsedChildren,
     );
   }

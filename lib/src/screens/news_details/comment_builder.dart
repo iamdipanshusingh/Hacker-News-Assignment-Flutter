@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_html/style.dart';
 import 'package:provider/provider.dart';
 import 'package:searchhn/src/models/item.dart';
 import 'package:searchhn/src/provider/state.dart';
@@ -22,48 +23,71 @@ class CommentsBuilder extends StatelessWidget {
       physics: BouncingScrollPhysics(),
       shrinkWrap: true,
       itemCount: comments.length,
-      itemBuilder: (_, index) => Padding(
-        padding: const EdgeInsets.only(left: 10),
-        child: ListView(
-          physics: BouncingScrollPhysics(),
-          shrinkWrap: true,
-          children: [
-            Html(
-              data: comments[index].text ?? comments[index].title ?? '-',
-              onLinkTap: (url) {
-                Utils.launchUrl(url);
-              },
+      itemBuilder: (_, index) => ListView(
+        physics: BouncingScrollPhysics(),
+        shrinkWrap: true,
+        children: [
+          Html(
+            data: comments[index].text ?? comments[index].title ?? '-',
+            style: {
+              '*': Style(textAlign: TextAlign.justify),
+            },
+            onLinkTap: (url) {
+              Utils.launchUrl(url);
+            },
+          ),
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  comments[index].author,
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                Text(
+                  comments[index].createdAt,
+                  style: TextStyle(
+                    color: Colors.black87,
+                    fontSize: 13,
+                    // fontWeight: FontWeight.w300,
+                  ),
+                ),
+              ],
             ),
-            Divider(),
-            Selector<AppState, Map>(
-              selector: (_, provider) => provider.viewReplyMap,
-              builder: (_, viewReplyMap, __) {
-                return (viewReplyMap[comments[index].parentId] ?? false)
-                    ? Padding(
-                        padding: const EdgeInsets.only(left: 30),
-                        child: CustomPaint(
-                          painter: CommentLineBuilder(),
-                          child: CommentsBuilder(comments: comments[index].children),
-                        ),
-                      )
-                    : GestureDetector(
-                        onTap: () {
-                          Map data = {comments[index].parentId: true};
+          ),
+          Divider(),
+          Selector<AppState, Map>(
+            selector: (_, provider) => provider.viewReplyMap,
+            builder: (_, viewReplyMap, __) {
+              return (viewReplyMap[comments[index].parentId] ?? false)
+                  ? Padding(
+                      padding: const EdgeInsets.only(left: 20),
+                      child: CustomPaint(
+                        painter: CommentLineBuilder(),
+                        child: CommentsBuilder(comments: comments[index].children),
+                      ),
+                    )
+                  : GestureDetector(
+                      onTap: () {
+                        Map data = {comments[index].parentId: true};
 
-                          provider.updateViewCommentsMap(data);
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.all(5.0),
-                          child: Text(
-                            'View Reply',
-                            style: TextStyle(color: Theme.of(context).primaryColorDark),
-                          ),
+                        provider.updateViewCommentsMap(data);
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.all(5.0),
+                        child: Text(
+                          'View Reply',
+                          style: TextStyle(color: Theme.of(context).primaryColorDark),
                         ),
-                      );
-              },
-            ),
-          ],
-        ),
+                      ),
+                    );
+            },
+          ),
+        ],
       ),
     );
   }

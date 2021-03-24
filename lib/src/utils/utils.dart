@@ -14,7 +14,7 @@ class Utils {
 
   /// returns [String] representation of [DateTime]
   static String getDateRepresentation(DateTime time) {
-    DateFormat format = DateFormat('d MMM yy');
+    DateFormat format = DateFormat('d MMM yy, ').add_jm();
 
     return format.format(time);
   }

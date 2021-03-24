@@ -5,6 +5,7 @@ class ItemDetails {
   final String title;
   final String url;
   final String text;
+  final int storyId;
   final List<ItemDetails> children;
   final String error;
 
@@ -15,6 +16,7 @@ class ItemDetails {
     this.title,
     this.url,
     this.text,
+    this.storyId,
     this.children,
     this.error,
   });
@@ -30,6 +32,7 @@ class ItemDetails {
       title: json['title'],
       url: json['url'],
       text: json['text'],
+      storyId: json['story_id'],
       children: parsedChildren,
     );
   }

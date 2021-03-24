@@ -33,8 +33,8 @@ class APIController {
   /// [id] - id of the item to be fetched
   ///
   /// returns news details
-  static Future<ItemDetails> fetchNewsDetails(String id) async {
-    final String url = ITEM_DETAILS_URL + id;
+  static Future<ItemDetails> fetchNewsDetails(id) async {
+    final String url = ITEM_DETAILS_URL + id.toString();
 
     final response = await http.get(url);
 

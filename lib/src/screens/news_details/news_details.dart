@@ -20,15 +20,27 @@ class _NewsDetailsScreenState extends State<NewsDetailsScreen> {
     super.initState();
 
     provider = Provider.of<AppState>(context, listen: false);
-    provider.fetchNewsDetails(widget.id);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      provider.fetchNewsDetails(widget.id);
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Selector<AppState, ItemDetails>(
-        selector: (_, provider) => provider.newsDetails,
-        builder: (_, newsDetails, __) => Text(newsDetails.title),
+    return Selector<AppState, ItemDetails>(
+      selector: (_, provider) => provider.newsDetails,
+      builder: (_, newsDetails, __) => SafeArea(
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text(
+              'News Details',
+            ),
+          ),
+          body: Center(
+            child: Text(newsDetails.title ?? 'This might be a comment'),
+          ),
+        ),
       ),
     );
   }

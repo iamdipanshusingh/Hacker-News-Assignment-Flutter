@@ -86,8 +86,16 @@ class _HomeScreenState extends State<HomeScreen> {
                           key: PageStorageKey('search list'),
                           shrinkWrap: true,
                           physics: BouncingScrollPhysics(),
-                          itemCount: resultsWrapper?.newsList?.length,
-                          itemBuilder: (_, index) => _newsItemBuilder(resultsWrapper?.newsList[index]),
+                          itemCount: resultsWrapper.newsList?.length,
+                          itemBuilder: (_, index) {
+                            NewsResult newsResult = resultsWrapper.newsList[index];
+                            return GestureDetector(
+                              onTap: () {
+                                Navigator.of(context).pushNamed('/details', arguments: newsResult.id);
+                              },
+                              child: _newsItemBuilder(newsResult),
+                            );
+                          },
                         )
                       : Center(
                           child: Text('Nothing found!'),

@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
         routes: {
           '/': (_) => SplashScreen(),
           '/home': (_) => HomeScreen(),
-          '/details': (_) => NewsDetailsScreen(),
+          '/details': (context) => NewsDetailsScreen(id: ModalRoute.of(context).settings.arguments),
         },
       ),
     );

@@ -7,12 +7,15 @@ class AppState extends ChangeNotifier {
   bool _isLoading = false;
   ResultsWrapper _resultsWrapper;
   ItemDetails _newsDetails;
+  Map _viewReplyMap = Map();
 
   bool get isLoading => _isLoading;
 
   ResultsWrapper get resultsWrapper => _resultsWrapper;
 
   ItemDetails get newsDetails => _newsDetails;
+
+  Map get viewReplyMap => _viewReplyMap;
 
   /// this will simply search the news
   ///
@@ -76,8 +79,24 @@ class AppState extends ChangeNotifier {
   }
 
   /// explicitly sets the news details
-  setNewsDetails(ItemDetails itemDetails, {bool shouldNotify = false}) {
+  setNewsDetails(ItemDetails itemDetails, {bool shouldNotify = true}) {
     _newsDetails = itemDetails;
+
+    if (shouldNotify) notifyListeners();
+  }
+
+  /// update the viewed comments list here
+  ///
+  /// this will set the viewed comments' status
+  /// initially, they'll be null -> not viewed yet [_viewReplyMap] => {}
+  /// when they're clicked -> map will have their respective data => {parent_id: true}
+  ///
+  /// once a value is set to true will remain true -> on back press [_viewReplyMap] will be reset
+  updateViewCommentsMap(Map data, {bool shouldNotify = true}) {
+    if (data == null)
+      _viewReplyMap = Map();
+    else
+      _viewReplyMap[data.keys.first] = data.values.first;
 
     if (shouldNotify) notifyListeners();
   }

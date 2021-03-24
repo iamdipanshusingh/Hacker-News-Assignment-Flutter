@@ -23,10 +23,17 @@ class AppState extends ChangeNotifier {
       notifyListeners();
     }
 
-    _resultsWrapper = await APIController.queryNews(query, page: page);
+    try {
+      _resultsWrapper = await APIController.queryNews(query, page: page);
 
-    /// this will simply remove the redundant item having no title
-    _resultsWrapper.newsList.removeWhere((item) => item.title == null || item.title.isEmpty);
+      /// this will simply remove the redundant item having no title
+      _resultsWrapper.newsList.removeWhere((item) => item.title == null || item.title.isEmpty);
+    } catch (_) {
+      if (shouldNotify) {
+        _isLoading = false;
+        notifyListeners();
+      }
+    }
 
     if (shouldNotify) {
       _isLoading = false;
@@ -35,17 +42,43 @@ class AppState extends ChangeNotifier {
   }
 
   /// fetches the news details
-  fetchNewsDetails(String id, {bool shouldNotify = true}) async {
-    if (shouldNotify) {
+  fetchNewsDetails(id, {bool shouldNotify = true, bool notifyLater = false}) async {
+    if (id == null) {
+      _newsDetails = ItemDetails(error: 'Please provide a valid ID');
+      if (shouldNotify) notifyListeners();
+      return;
+    }
+
+    if (!notifyLater && shouldNotify) {
       _isLoading = true;
       notifyListeners();
     }
 
-    _newsDetails = await APIController.fetchNewsDetails(id);
+    try {
+      _newsDetails = await APIController.fetchNewsDetails(id);
 
-    if (shouldNotify) {
+      /// if the news type is not a story... then fetch the story of it
+      if (_newsDetails.type != 'story') {
+        fetchNewsDetails(_newsDetails.storyId, notifyLater: true);
+        return;
+      }
+    } catch (_) {
+      if (notifyLater || shouldNotify) {
+        _isLoading = false;
+        notifyListeners();
+      }
+    }
+
+    if (notifyLater || shouldNotify) {
       _isLoading = false;
       notifyListeners();
     }
+  }
+
+  /// explicitly sets the news details
+  setNewsDetails(ItemDetails itemDetails, {bool shouldNotify = false}) {
+    _newsDetails = itemDetails;
+
+    if (shouldNotify) notifyListeners();
   }
 }

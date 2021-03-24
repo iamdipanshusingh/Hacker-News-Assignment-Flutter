@@ -26,20 +26,27 @@ class _NewsDetailsScreenState extends State<NewsDetailsScreen> {
     });
   }
 
+
+  @override
+  void dispose() {
+    super.dispose();
+
+    provider.setNewsDetails(null, shouldNotify: false);
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Selector<AppState, ItemDetails>(
-      selector: (_, provider) => provider.newsDetails,
-      builder: (_, newsDetails, __) => SafeArea(
+    return Consumer<AppState>(
+      builder: (_, provider, __) => SafeArea(
         child: Scaffold(
           appBar: AppBar(
             title: Text(
               'News Details',
             ),
           ),
-          body: Center(
-            child: Text(newsDetails.title ?? 'This might be a comment'),
-          ),
+          body: !provider.isLoading ? Center(
+            child: Text(provider.newsDetails?.title ?? 'This might be a comment'),
+          ) : Center(child: CircularProgressIndicator(),),
         ),
       ),
     );

@@ -32,7 +32,7 @@ class _NewsDetailsScreenState extends State<NewsDetailsScreen> {
       provider.fetchNewsDetails(widget.id);
 
       _controller.addListener(() {
-        if (_controller.offset > 20)
+        if (_controller.offset > 200)
           provider.setFAB(true);
         else
           provider.setFAB(false);
@@ -46,6 +46,7 @@ class _NewsDetailsScreenState extends State<NewsDetailsScreen> {
 
     provider.setNewsDetails(null, shouldNotify: false);
     provider.updateViewCommentsMap(null, shouldNotify: false);
+    provider.setFAB(false, shouldNotify: false);
 
     _controller.dispose();
   }
@@ -92,7 +93,6 @@ class _NewsDetailsScreenState extends State<NewsDetailsScreen> {
                             children: [
                               TextSpan(
                                 text: newsDetails?.author,
-                                style: TextStyle(color: Colors.black54),
                               ),
                             ],
                             style: TextStyle(color: Colors.black, fontSize: 15),
@@ -109,7 +109,10 @@ class _NewsDetailsScreenState extends State<NewsDetailsScreen> {
                             },
                             child: Padding(
                               padding: const EdgeInsets.symmetric(vertical: 8.0),
-                              child: Text('Click here to open link'),
+                              child: Text(
+                                'Click here to open link',
+                                style: TextStyle(color: Theme.of(context).primaryColorDark),
+                              ),
                             ),
                           ),
                         Divider(),
